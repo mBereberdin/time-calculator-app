@@ -1,0 +1,74 @@
+name: Build
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-ubuntu:
+
+    strategy:
+      matrix:
+        configuration: [Release]
+
+    runs-on: ubuntu-latest
+
+    env:
+      Solution_Name: TimeCalculator.sln
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    # Установка .NET Core
+    - name: Install .NET Core
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 7.0.x
+
+    # Восстановление зависимостей
+    - name: Restore dependencies
+      run: dotnet restore
+      working-directory: ./src
+
+    # Сборка проекта
+    - name: Build
+      run: dotnet build --no-restore
+      working-directory: ./src
+
+  build-windows:
+    
+    strategy:
+      matrix:
+        configuration: [Release]
+
+    runs-on: windows-latest
+
+    env:
+      Solution_Name: TimeCalculator.sln
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    # Установка .NET Core
+    - name: Install .NET Core
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 7.0.x
+
+    # Добавление MSBuild
+    - name: Setup MSBuild
+      uses: microsoft/setup-msbuild@v1.0.2
+
+    # Восстановление зависимостей
+    - name: Restore dependencies
+      run: dotnet restore
+      working-directory: ./src
+
+    # Сборка проекта
+    - name: Build
+      run: dotnet build --no-restore
+      working-directory: ./src
