@@ -1,9 +1,11 @@
-namespace TimeCalculator.Helpers;
+namespace TimeCalculator.Extensions;
+
+using SystemConsole = System.Console;
 
 /// <summary>
-/// Помощник для работы с интерфейсом командной строки.
+/// Обёртка класса <see cref="System.Console"/> для работы с интерфейсом командной строки.
 /// </summary>
-public static class CliHelper
+public static class Console
 {
     /// <summary>
     /// Написать сообщение и попытаться получить значение.
@@ -14,10 +16,10 @@ public static class CliHelper
     /// <exception cref="NullReferenceException">Когда введенное пользователем значение было пустым.</exception>
     public static TResult WriteMessageAndTryGetValue<TResult>(string message)
     {
-        Console.Write(message);
+        SystemConsole.Write(message);
 
-        var valueString = Console.ReadLine();
-        Console.WriteLine();
+        var valueString = SystemConsole.ReadLine();
+        SystemConsole.WriteLine();
 
         if (string.IsNullOrEmpty(valueString))
         {
@@ -30,7 +32,7 @@ public static class CliHelper
     }
 
     /// <summary>
-    /// Определить тип и получить значение.
+    /// Определить тип и получить значение строки.
     /// </summary>
     /// <param name="valueString">Строка со значением.</param>
     /// <typeparam name="TResult">Тип выходного значения.</typeparam>
@@ -41,21 +43,27 @@ public static class CliHelper
         switch (Type.GetTypeCode(typeof(TResult)))
         {
             case TypeCode.String:
+            {
                 return (TResult)(object)valueString;
+            }
             case TypeCode.Int32:
+            {
                 if (int.TryParse(valueString, out var intValue))
                 {
                     return (TResult)(object)intValue;
                 }
 
                 break;
+            }
             case TypeCode.Boolean:
+            {
                 if (bool.TryParse(valueString, out var boolValue))
                 {
                     return (TResult)(object)boolValue;
                 }
 
                 break;
+            }
         }
 
         throw new InvalidCastException(
@@ -69,14 +77,14 @@ public static class CliHelper
     /// <param name="array">Массив, элементы которого необходимо вывести в командную строку.</param>
     public static void WriteMessageAndArrayElementsWithSum(string message, int[] array)
     {
-        Console.WriteLine(message);
+        SystemConsole.WriteLine(message);
 
         for (var count = 0; count < array.Length; count++)
         {
-            Console.WriteLine($"День {count + 1}. {array[count]} мин.");
+            SystemConsole.WriteLine($"День {count + 1}. {array[count]} мин.");
         }
 
-        Console.WriteLine($"Сумма элементов: {array.Sum() / 60} ч.");
-        Console.WriteLine();
+        SystemConsole.WriteLine($"Сумма элементов: {array.Sum().ToHours()} ч.");
+        SystemConsole.WriteLine();
     }
 }

@@ -1,7 +1,8 @@
 namespace TimeCalculator.Workers;
 
 using TimeCalculator.Calculators;
-using TimeCalculator.Helpers;
+using TimeCalculator.Extensions;
+using TimeCalculator.Models;
 
 /// <summary>
 /// Рабочий приложения.
@@ -13,20 +14,31 @@ public class AppWorker
     /// </summary>
     public void DoWork()
     {
-        var neededHours = CliHelper.WriteMessageAndTryGetValue<int>("Введите необходимые часы для занятия делом:");
-        var neededDays =
-            CliHelper.WriteMessageAndTryGetValue<int>("Введите кол-во дней, которое вы хотите заниматься делом:");
-        var availableHoursInDay =
-            CliHelper.WriteMessageAndTryGetValue<int>("Введите макисмальное кол-во часов для занятия делом в день:");
-        var numberOfGenerations =
-            CliHelper.WriteMessageAndTryGetValue<int>("Введите кол-во вариантов последовательностей:");
-        var calculatedRanges =
-            TimeCalculator.CalculateRange(neededHours, neededDays, availableHoursInDay, numberOfGenerations, 1);
+        var timeCalculationInfo = GetTimeCalculationInfoFromUser();
 
-        foreach (var calculatedRange in calculatedRanges)
-        {
-            CliHelper.WriteMessageAndArrayElementsWithSum("Рассчитанный временной диапазон:",
-                calculatedRange.ToArray());
-        }
+        var countOfGenerations =
+            Console.WriteMessageAndTryGetValue<int>("Введите кол-во вариантов последовательностей:");
+
+        var timeCalculator = new TimeCalculator(timeCalculationInfo);
+        var calculatedRanges = timeCalculator.CalculateRanges(countOfGenerations);
+
+        calculatedRanges.PrintTimes();
+    }
+
+    /// <summary>
+    /// Получить информацию для рассчетов времени от пользователя.
+    /// </summary>
+    /// <returns>Информация для рассчетов времени.</returns>
+    private TimeCalculationInfo GetTimeCalculationInfoFromUser()
+    {
+        var neededHours = Console.WriteMessageAndTryGetValue<int>("Введите необходимые часы для занятия делом:");
+        var neededDays =
+            Console.WriteMessageAndTryGetValue<int>("Введите кол-во дней, которое вы хотите заниматься делом:");
+        var availableHoursInDay =
+            Console.WriteMessageAndTryGetValue<int>("Введите максимальное кол-во часов для занятия делом в день:");
+
+        var timeCalculationInfo = new TimeCalculationInfo(neededHours, neededDays, availableHoursInDay);
+
+        return timeCalculationInfo;
     }
 }

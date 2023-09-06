@@ -1,94 +1,79 @@
 namespace TimeCalculator.Calculators;
 
+using global::TimeCalculator.Extensions;
+using global::TimeCalculator.Models;
+
 /// <summary>
 /// Калькулятор времени.
 /// </summary>
-public static class TimeCalculator
+public class TimeCalculator
 {
-    /// <summary>
-    /// Рассчитать диапазон.
-    /// </summary>
-    /// <param name="neededHours">Необходимые часы.</param>
-    /// <param name="neededDays">Колличество дней.</param>
-    /// <param name="availableHoursInDay">Макисмальное доступное колличество часов в день.</param>
-    /// <param name="tolerance">Погрешность.</param>
-    /// <returns>Рассчитанный диапазон часов.</returns>
-    /// <exception cref="ArgumentException">Когда погрешность была меньше 1.</exception>
-    public static IEnumerable<int> CalculateRange(int neededHours, int neededDays, int availableHoursInDay,
-        int tolerance = 1)
+    /// <inheritdoc cref="TimeCalculationInfo"/>
+    private readonly TimeCalculationInfo _timeCalculationInfo;
+
+    /// <inheritdoc cref="TimeCalculator"/>
+    public TimeCalculator(TimeCalculationInfo timeCalculationInfo)
     {
-        if (tolerance < 1)
+        if (timeCalculationInfo is null)
         {
-            throw new ArgumentException("Погрешность не может быть меньше 1.");
+            throw new NullReferenceException(
+                "Для калькулятора времени была передана пустая информация для рассчетов времени.");
         }
 
-        var randomMinutes = new Random();
-
-        var randomRange = new int[neededDays];
-        while (randomRange.Sum() / 60 < neededHours - 1)
-        {
-            for (var count = 0; count < randomRange.Length; count++)
-            {
-                if (randomRange.Sum() / 60 > neededHours - tolerance && randomRange.Length > 0)
-                {
-                    break;
-                }
-
-                int estimatedMinutes;
-                do
-                {
-                    var isRandomDay = randomMinutes.Next(0, 2) is 1 ? false : true;
-                    var generatedMinutes = double.MaxValue;
-                    while (generatedMinutes > availableHoursInDay)
-                    {
-                        generatedMinutes = Math.Round(randomMinutes.NextDouble(), 1);
-
-                        if (isRandomDay)
-                        {
-                            var randomizedMinutes = Math.Round(randomMinutes.NextDouble(), 1);
-
-                            while (generatedMinutes + randomizedMinutes > availableHoursInDay)
-                            {
-                                randomizedMinutes = Math.Round(randomMinutes.NextDouble(), 1);
-                            }
-
-                            generatedMinutes += randomizedMinutes;
-                        }
-                    }
-
-                    estimatedMinutes = (int)(60 * generatedMinutes);
-                }
-                while (randomRange[count] + estimatedMinutes > availableHoursInDay * 60);
-
-                randomRange[count] += estimatedMinutes;
-            }
-        }
-
-        return randomRange;
+        _timeCalculationInfo = timeCalculationInfo;
     }
 
     /// <summary>
-    /// Рассчитать диапазон.
+    /// Рассчитать диапазон часов.
     /// </summary>
-    /// <param name="neededHours">Необходимые часы.</param>
-    /// <param name="neededDays">Колличество дней.</param>
-    /// <param name="availableHoursInDay">Макисмальное доступное колличество часов в день.</param>
-    /// <param name="countOfGenerations">Колличество необходимых рассчитанных диапазонов часов.</param>
-    /// <param name="tolerance">Погрешность.</param>
-    /// <returns>Перечисление рассчитанных диапазонов часов.</returns>
-    /// <exception cref="ArgumentNullException">Когда произошла ошибка при создании списка расчетов.</exception>
-    public static IEnumerable<IEnumerable<int>> CalculateRange(int neededHours, int neededDays, int availableHoursInDay,
-        int countOfGenerations, int tolerance = 1)
+    /// <returns>Рассчитанный диапазон часов.</returns>
+    private IEnumerable<int> CalculateRange()
     {
-        var calculatedRanges = new List<IEnumerable<int>>(countOfGenerations);
-        if (calculatedRanges == null)
+        var calculatedDays = new int[_timeCalculationInfo.NeededDays];
+        var totalCalculatedHours = 0;
+        var maxDayMinutes = _timeCalculationInfo.AvailableHoursInDay.ToMinutes();
+        var timeRandom = new Random();
+
+        while (totalCalculatedHours < _timeCalculationInfo.NeededHours - _timeCalculationInfo.Tolerance)
         {
-            throw new ArgumentNullException("Ошибка при создании списка расчетов.");
+            for (var index = 0;
+                 index < calculatedDays.Length &&
+                 totalCalculatedHours < _timeCalculationInfo.NeededHours - _timeCalculationInfo.Tolerance;
+                 index++)
+            {
+                int calculatedMinutes;
+                do
+                {
+                    calculatedMinutes = timeRandom.NextMinutes(_timeCalculationInfo.AvailableHoursInDay.ToMinutes());
+                }
+                while (calculatedDays[index] + calculatedMinutes > maxDayMinutes);
+
+                calculatedDays[index] += calculatedMinutes;
+                totalCalculatedHours = calculatedDays.Sum().ToHours();
+            }
         }
 
+        return calculatedDays;
+    }
+
+    /// <summary>
+    /// Рассчитать диапазоны часов.
+    /// </summary>
+    /// <param name="countOfGenerations">Колличество необходимых рассчитанных диапазонов часов.</param>
+    /// <returns>Перечисление рассчитанных диапазонов часов.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Когда произошла ошибка при создании списка расчетов.</exception>
+    public IEnumerable<IEnumerable<int>> CalculateRanges(int countOfGenerations)
+    {
+        if (countOfGenerations <= 0)
+        {
+            throw new ArgumentOutOfRangeException(
+                "Колличество необходимых рассчитанных диапазонов часов не можеть быть меньше или равно нулю.");
+        }
+
+        var calculatedRanges = new List<IEnumerable<int>>(countOfGenerations);
         for (var generationNumber = 0; generationNumber < countOfGenerations; generationNumber++)
         {
-            var calculatedRange = CalculateRange(neededHours, neededDays, availableHoursInDay, tolerance);
+            var calculatedRange = CalculateRange();
             calculatedRanges.Add(calculatedRange);
         }
 
