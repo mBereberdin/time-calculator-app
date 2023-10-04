@@ -26,9 +26,9 @@ public class AppWorker
     }
 
     /// <summary>
-    /// Получить информацию для рассчетов времени от пользователя.
+    /// Получить информацию для расчетов времени от пользователя.
     /// </summary>
-    /// <returns>Информация для рассчетов времени.</returns>
+    /// <returns>Информация для расчетов времени.</returns>
     private TimeCalculationInfo GetTimeCalculationInfoFromUser()
     {
         var neededHours = Console.WriteMessageAndTryGetValue<int>("Введите необходимые часы для занятия делом:");

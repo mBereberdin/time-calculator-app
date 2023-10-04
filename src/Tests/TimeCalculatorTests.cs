@@ -61,7 +61,7 @@ public class TimeCalculatorTests
     [Theory]
     [InlineData(0)]
     [InlineData(-1)]
-    public void IncorrectCalculationsCount_CalculateRange_Success(int calculationsCount)
+    public void IncorrectCalculationsCount_CalculateRange_Fail(int calculationsCount)
     {
         // Arrange
         var timeCalculationInfo = new TimeCalculationInfo(30, 7, 8);

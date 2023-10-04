@@ -12,12 +12,14 @@ public class TimeCalculator
     private readonly TimeCalculationInfo _timeCalculationInfo;
 
     /// <inheritdoc cref="TimeCalculator"/>
+    /// <param name="timeCalculationInfo">Информация для расчетов времени.</param>
+    /// <exception cref="NullReferenceException">Когда для калькулятора времени была передана пустая информация для расчетов времени.</exception>
     public TimeCalculator(TimeCalculationInfo timeCalculationInfo)
     {
         if (timeCalculationInfo is null)
         {
             throw new NullReferenceException(
-                "Для калькулятора времени была передана пустая информация для рассчетов времени.");
+                "Для калькулятора времени была передана пустая информация для расчетов времени.");
         }
 
         _timeCalculationInfo = timeCalculationInfo;
@@ -59,15 +61,15 @@ public class TimeCalculator
     /// <summary>
     /// Рассчитать диапазоны часов.
     /// </summary>
-    /// <param name="countOfGenerations">Колличество необходимых рассчитанных диапазонов часов.</param>
-    /// <returns>Перечисление рассчитанных диапазонов часов.</returns>
+    /// <param name="countOfGenerations">Количество диапазонов.</param>
+    /// <returns>Перечисление рассчитанных диапазонов.</returns>
     /// <exception cref="ArgumentOutOfRangeException">Когда произошла ошибка при создании списка расчетов.</exception>
     public IEnumerable<IEnumerable<int>> CalculateRanges(int countOfGenerations)
     {
         if (countOfGenerations <= 0)
         {
             throw new ArgumentOutOfRangeException(
-                "Колличество необходимых рассчитанных диапазонов часов не можеть быть меньше или равно нулю.");
+                "Количество необходимых рассчитанных диапазонов часов не можеть быть меньше или равно нулю.");
         }
 
         var calculatedRanges = new List<IEnumerable<int>>(countOfGenerations);

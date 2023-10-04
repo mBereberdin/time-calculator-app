@@ -78,10 +78,11 @@ public static class Console
     public static void WriteMessageAndArrayElementsWithSum(string message, int[] array)
     {
         SystemConsole.WriteLine(message);
+        var valueIndexPairs = array.Select((value, index) => new { ArrayValue = value, ValueIndex = index });
 
-        for (var count = 0; count < array.Length; count++)
+        foreach (var valueIndexPair in valueIndexPairs)
         {
-            SystemConsole.WriteLine($"День {count + 1}. {array[count]} мин.");
+            SystemConsole.WriteLine($"День {valueIndexPair.ValueIndex + 1}. {valueIndexPair.ArrayValue} мин.");
         }
 
         SystemConsole.WriteLine($"Сумма элементов: {array.Sum().ToHours()} ч.");

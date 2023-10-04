@@ -1,14 +1,14 @@
 namespace TimeCalculator.Models;
 
 /// <summary>
-/// Информация для рассчетов времени.
+/// Информация для расчетов времени.
 /// </summary>
 public class TimeCalculationInfo
 {
     /// <inheritdoc cref="TimeCalculationInfo"/>
     /// <param name="neededHours">Необходимые часы.</param>
-    /// <param name="neededDays">Необходимое колличество дней.</param>
-    /// <param name="availableHoursInDay">Макисмальное доступное колличество часов в день.</param>
+    /// <param name="neededDays">Необходимое количество дней.</param>
+    /// <param name="availableHoursInDay">Макисмальное доступное количество часов в день.</param>
     /// <param name="tolerance">Погрешность.</param>
     /// <exception cref="ArgumentOutOfRangeException">Когда были переданы не корректные параметры.</exception>
     public TimeCalculationInfo(int neededHours, int neededDays, int availableHoursInDay, int tolerance = 0)
@@ -56,12 +56,12 @@ public class TimeCalculationInfo
     public int NeededHours { get; set; }
 
     /// <summary>
-    /// Необходимое колличество дней.
+    /// Необходимое количество дней.
     /// </summary>
     public int NeededDays { get; set; }
 
     /// <summary>
-    /// Макисмальное доступное колличество часов в день.
+    /// Макисмальное доступное количество часов в день.
     /// </summary>
     public int AvailableHoursInDay { get; set; }
 
