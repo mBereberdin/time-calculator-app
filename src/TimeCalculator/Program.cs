@@ -1,3 +1,12 @@
-﻿// See https://aka.ms/new-console-template for more information
+﻿using TimeCalculator;
+using TimeCalculator.Workers;
 
-Console.WriteLine("Hello, World!");
+AppConfigurator.AddUnhandledExceptionHandler();
+var appWorker = new AppWorker();
+
+while (true)
+{
+    Console.Clear();
+    appWorker.DoWork();
+    Console.ReadLine();
+}
